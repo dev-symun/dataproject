@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 
 # ==============================
 # 페이지 설정
@@ -11,8 +10,14 @@ st.set_page_config(page_title="상관관계 분석 도구", layout="wide")
 st.markdown(
     """
     <style>
+    /* 전체 배경색 */
     .stApp {
-        background-color: #FFF1F3;  /* 연한 파스텔 핑크 */
+        background-color: #FFF9F0;  /* 연한 파스텔 베이지 */
+        color: #000000;  /* 텍스트 검정 고정 */
+    }
+    /* 헤더/텍스트 색상 강제 */
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        color: #000000 !important;
     }
     </style>
     """, unsafe_allow_html=True
@@ -100,8 +105,13 @@ st.dataframe(top_df.style.format({"상관계수": "{:.4f}", "절대값": "{:.4f}
 
 # 히트맵 추가
 st.subheader("📊 상관계수 Top10 히트맵")
-heatmap_matrix = corr_matrix.loc[[a for a, b, _, _ in top_pairs], [b for a, b, _, _ in top_pairs]]
-fig_heat = px.imshow(heatmap_matrix, color_continuous_scale="pastel")
+top_attrs = list(set([a for a, b, _, _ in top_pairs] + [b for a, b, _, _ in top_pairs]))
+heatmap_matrix = corr_matrix.loc[top_attrs, top_attrs]
+fig_heat = px.imshow(
+    heatmap_matrix, 
+    color_continuous_scale=px.colors.sequential.Peach
+)
+fig_heat.update_layout(coloraxis_colorbar=dict(title="상관계수"))
 st.plotly_chart(fig_heat, use_container_width=True)
 
 pair_options = [f"{a} ↔ {b} (r={v:.3f})" for a, b, v, _ in top_pairs]
