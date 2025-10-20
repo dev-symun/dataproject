@@ -19,6 +19,10 @@ st.markdown(
     h1, h2, h3, h4, h5, h6, p, span, div {
         color: #000000 !important;
     }
+    /* selectbox, multiselect, input 텍스트 색상 고정 */
+    div.stSelectbox, div.stMultiSelect, div.stTextInput, div.stNumberInput {
+        color: #000000 !important;
+    }
     </style>
     """, unsafe_allow_html=True
 )
@@ -52,7 +56,6 @@ y_col = col2.selectbox("Y축 속성 선택", numeric_cols, index=min(1, len(nume
 
 if x_col and y_col:
     corr_value = df[x_col].corr(df[y_col])
-
     st.subheader(f"📊 {x_col} vs {y_col}")
 
     fig = px.scatter(df, x=x_col, y=y_col, trendline="ols",
@@ -103,17 +106,6 @@ top_pairs = sorted(pairs, key=lambda x: x[3], reverse=True)[:10]
 top_df = pd.DataFrame(top_pairs, columns=["속성1", "속성2", "상관계수", "절대값"])
 st.dataframe(top_df.style.format({"상관계수": "{:.4f}", "절대값": "{:.4f}"}))
 
-# 히트맵 추가
-st.subheader("📊 상관계수 Top10 히트맵")
-top_attrs = list(set([a for a, b, _, _ in top_pairs] + [b for a, b, _, _ in top_pairs]))
-heatmap_matrix = corr_matrix.loc[top_attrs, top_attrs]
-fig_heat = px.imshow(
-    heatmap_matrix, 
-    color_continuous_scale=px.colors.sequential.Peach
-)
-fig_heat.update_layout(coloraxis_colorbar=dict(title="상관계수"))
-st.plotly_chart(fig_heat, use_container_width=True)
-
 pair_options = [f"{a} ↔ {b} (r={v:.3f})" for a, b, v, _ in top_pairs]
 selected_pair = st.selectbox("상관관계가 높은 속성쌍 선택", pair_options)
 
@@ -122,6 +114,7 @@ if selected_pair:
     a, b, v, _ = top_pairs[idx]
     st.subheader(f"📈 {a} ↔ {b} (r={v:.4f})")
 
+    # 산점도 출력
     fig2 = px.scatter(df, x=a, y=b, trendline="ols",
                       opacity=0.7,
                       color_discrete_sequence=["#77DD77"])  # 파스텔 그린
@@ -129,6 +122,17 @@ if selected_pair:
                        selector=dict(mode='markers'))
     fig2.update_traces(line=dict(color="#FF6961"), selector=dict(mode='lines'))  # 파스텔 레드
     st.plotly_chart(fig2, use_container_width=True)
+
+    # 히트맵 출력 (선택한 속성 포함)
+    st.subheader("📊 선택 속성 포함 히트맵")
+    heat_attrs = list(set([a, b]))
+    heatmap_matrix = corr_matrix.loc[heat_attrs, heat_attrs]
+    fig_heat = px.imshow(
+        heatmap_matrix,
+        color_continuous_scale=px.colors.sequential.Peach
+    )
+    fig_heat.update_layout(coloraxis_colorbar=dict(title="상관계수"))
+    st.plotly_chart(fig_heat, use_container_width=True)
 
     sign_text = "양의 상관관계" if v > 0 else "음의 상관관계"
     degree_text = (
