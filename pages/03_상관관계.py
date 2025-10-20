@@ -12,7 +12,7 @@ st.markdown("엑셀 파일에서 수치형 변수들을 자동으로 골라 산�
 # 파일 입력: 업로드 우선, 없으면 기본 파일 경로 사용
 uploaded = st.file_uploader("엑셀 파일 업로드 (.xlsx 또는 .csv 가능)", type=["xlsx", "csv"])
 if uploaded is None:
-    default_path = "/mnt/data/fitness data.xlsx"
+    default_path = "fitness data.xlsx"
     st.markdown(f"- 기본 파일 사용: `{default_path}` (업로드하면 이 파일 대신 사용)")
     try:
         df = pd.read_excel(default_path)
