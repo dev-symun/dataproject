@@ -83,14 +83,14 @@ mbti_cols = [c for c in df.columns if c.upper() in [
 # ---- 국가별 MBTI 분포 (파이 차트) ----
 st.subheader("🌐 국가별 MBTI 분포 분석")
 
-country_list = sorted(df["country"].unique())
+country_list = sorted(df["Country"].unique())
 selected_country = st.selectbox("국가를 선택하세요:", country_list)
 
-country_df = df[df["country"] == selected_country]
+country_df = df[df["Country"] == selected_country]
 
 if len(mbti_cols) > 0:
     melted_df = country_df.melt(
-        id_vars=["country"],
+        id_vars=["Country"],
         value_vars=mbti_cols,
         var_name="MBTI",
         value_name="비율"
@@ -122,12 +122,12 @@ st.subheader("📈 MBTI별 국가 순위")
 
 selected_mbti = st.selectbox("MBTI 유형을 선택하세요:", mbti_cols)
 
-mbti_country_df = df[["country", selected_mbti]].groupby("country")[selected_mbti].mean().reset_index()
+mbti_country_df = df[["Country", selected_mbti]].groupby("Country")[selected_mbti].mean().reset_index()
 mbti_country_df = mbti_country_df.sort_values(selected_mbti, ascending=False)
 
 fig3 = px.bar(
     mbti_country_df,
-    x="country",
+    x="Country",
     y=selected_mbti,
     text_auto=".2f",
     color=selected_mbti,
@@ -148,14 +148,14 @@ st.plotly_chart(fig3, use_container_width=True)
 # ---- 전체 국가 평균 비교 ----
 st.subheader("📊 전 세계 MBTI 평균 비교")
 
-avg_df = df.groupby("country")[mbti_cols].mean().reset_index()
-avg_df = avg_df.melt(id_vars=["country"], var_name="MBTI", value_name="비율")
+avg_df = df.groupby("Country")[mbti_cols].mean().reset_index()
+avg_df = avg_df.melt(id_vars=["Country"], var_name="MBTI", value_name="비율")
 
 fig2 = px.bar(
     avg_df,
     x="MBTI",
     y="비율",
-    color="country",
+    color="Country",
     barmode="group",
     title="국가별 MBTI 평균 비율 비교"
 )
