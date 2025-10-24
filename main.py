@@ -74,10 +74,10 @@ st.success("이상치 처리가 완료되었습니다.")
 
 # ---- 국가 선택 ----
 st.subheader("🌐 국가별 MBTI 분포 분석")
-country_list = sorted(df["country"].unique())
+country_list = sorted(df["Country"].unique())
 selected_country = st.selectbox("국가를 선택하세요:", country_list)
 
-country_df = df[df["country"] == selected_country]
+country_df = df[df["Country"] == selected_country]
 mbti_cols = [c for c in country_df.columns if c.upper() in [
     "INTJ","INTP","ENTJ","ENTP",
     "INFJ","INFP","ENFJ","ENFP",
@@ -87,7 +87,7 @@ mbti_cols = [c for c in country_df.columns if c.upper() in [
 
 if len(mbti_cols) > 0:
     melted_df = country_df.melt(
-        id_vars=["country"],
+        id_vars=["Country"],
         value_vars=mbti_cols,
         var_name="MBTI",
         value_name="비율"
@@ -125,14 +125,14 @@ else:
 # ---- 전체 국가 비교 ----
 st.subheader("📊 전 세계 MBTI 평균 비교")
 
-avg_df = df.groupby("country")[mbti_cols].mean().reset_index()
-avg_df = avg_df.melt(id_vars=["country"], var_name="MBTI", value_name="비율")
+avg_df = df.groupby("Country")[mbti_cols].mean().reset_index()
+avg_df = avg_df.melt(id_vars=["Country"], var_name="MBTI", value_name="비율")
 
 fig2 = px.bar(
     avg_df,
     x="MBTI",
     y="비율",
-    color="country",
+    color="Country",
     barmode="group",
     title="국가별 MBTI 평균 비율 비교"
 )
