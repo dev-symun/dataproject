@@ -1,8 +1,4 @@
 streamlit
 pandas
-numpy
 plotly
-scikit-learn
-folium
-openpyxl>=3.0
-statsmodels
+numpy
